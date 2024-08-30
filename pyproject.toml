@@ -1,0 +1,21 @@
+[project]
+name = "Imecas-auto-reconnect"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "LLinkedlist", email = "72634327+linkedlist771@users.noreply.github.com"},
+]
+dependencies = [
+    "playwright>=1.46.0",
+    "pydantic>=2.8.2",
+    "loguru>=0.7.2",
+    "pydantic-settings>=2.4.0",
+    "apscheduler>=3.10.4",
+]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
