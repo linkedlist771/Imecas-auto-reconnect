@@ -1,5 +1,6 @@
 import asyncio
 from playwright.async_api import async_playwright
+from playwright.async_api import TimeoutError as PlaywrightTimeOut
 
 from src.imecas_auto_reconnect.configs import get_settings
 from src.imecas_auto_reconnect.passwords_manager import PassWordsManager
@@ -7,7 +8,9 @@ import subprocess
 import sys
 import importlib.util
 from asyncio.subprocess import PIPE
+from loguru import logger
 
+COUNTS = 0
 
 async def run_command(cmd):
     process = await asyncio.create_subprocess_exec(
@@ -41,6 +44,7 @@ async def install_playwright_browsers():
     cmd = [sys.executable, "-m", "playwright", "install"]
     return await run_command(cmd)
 
+
 async def ensure_playwright_browsers():
     if importlib.util.find_spec("playwright") is None:
         print("Playwright 未安装。正在安装 Playwright...")
@@ -58,29 +62,42 @@ async def ensure_playwright_browsers():
 
 
 async def login_async():
-    await ensure_playwright_browsers()
-    async with async_playwright() as playwright:
-        passwords_manager = PassWordsManager()
-        browser = await playwright.chromium.launch(headless=False)
-        page = await browser.new_page()
-        await page.goto(url=get_settings().LOGIN_URL)
-        # await page.wait_for_selector('input[id="username"]')
-        await asyncio.sleep(2)
-        # Perform page operations
-        await page.fill('input[id="username"]', passwords_manager.username)
-        await page.fill('input[id="password"]', passwords_manager.password)
-        await page.click('input[type="submit"]')  # type="submit" id="loginBtn"
+    try:
+        global COUNTS
+        COUNTS += 1
+        logger.info(f"开始登录到 {get_settings().LOGIN_URL}, 第 {COUNTS} 次")
+        await ensure_playwright_browsers()
+        async with async_playwright() as playwright:
+            passwords_manager = PassWordsManager()
+            browser = await playwright.chromium.launch(headless=get_settings().HEAD_LESS)
+            page = await browser.new_page()
+            try:
+                await page.goto(url=get_settings().LOGIN_URL, timeout=1000)
+            except PlaywrightTimeOut:
+                pass
+            # await page.wait_for_selector('input[id="username"]')
+            await asyncio.sleep(2)
+            # Perform page operations
+            await page.fill('input[id="userName"]', passwords_manager.username)
+            await page.fill('input[id="password"]', passwords_manager.password)
+            await page.click('input[type="submit"]')  # type="submit" id="loginBtn"
 
-        # Wait for page to load
-        await page.wait_for_selector('.some-element')
+            # Wait for page to load
+            await page.wait_for_selector('.some-element')
 
-        # Get page content
-        content = await page.content()
-        print(content)
+            # Get page content
+            content = await page.content()
+            print(content)
 
-        # Take screenshot
-        await page.screenshot(path="screenshot.png")
+            # Take screenshot
+            await page.screenshot(path="screenshot.png")
 
+            await browser.close()
+    except Exception as e:
+        # formec exc
+        from traceback import print_exc
+        print_exc()
+    finally:
         await browser.close()
 
 
