@@ -6,8 +6,9 @@ ROOT_DIR = Path(__file__).parent.parent.parent
 CONFIG_JSON_PATH = ROOT_DIR / "config.json"
 
 class Settings(BaseSettings):
-    LOGIN_URL: str = "https://passport.escience.cn/"
+    LOGIN_URL: str = "https://passport.escience.cn/oauth2/authorize?client_id=47447&redirect_uri=https%3A%2F%2Fwired.ime.ac.cn%2Fsrun_portal_sso&response_type=code&state=1&theme=simple"
     RECONNECT_INTERVAL_MINUTES: int = 1 * 60 # 1 hour
+    HEAD_LESS: bool = True
 
 @lru_cache()
 def get_settings() -> Settings:
