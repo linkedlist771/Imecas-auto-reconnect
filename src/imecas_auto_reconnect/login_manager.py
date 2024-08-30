@@ -5,27 +5,55 @@ from src.imecas_auto_reconnect.configs import get_settings
 from src.imecas_auto_reconnect.passwords_manager import PassWordsManager
 import subprocess
 import sys
+import importlib.util
+from asyncio.subprocess import PIPE
+
+
+async def run_command(cmd):
+    process = await asyncio.create_subprocess_exec(
+        *cmd,
+        stdout=PIPE,
+        stderr=PIPE
+    )
+
+    async def read_stream(stream):
+        while True:
+            line = await stream.readline()
+            if line:
+                print(line.decode().strip())
+            else:
+                break
+
+    await asyncio.gather(
+        read_stream(process.stdout),
+        read_stream(process.stderr)
+    )
+
+    return await process.wait()
+
+async def install_package(package):
+    print(f"正在安装 {package}...")
+    cmd = [sys.executable, "-m", "pip", "install", package]
+    return await run_command(cmd)
+
+async def install_playwright_browsers():
+    print("正在检查并安装必要的浏览器...")
+    cmd = [sys.executable, "-m", "playwright", "install"]
+    return await run_command(cmd)
 
 async def ensure_playwright_browsers():
-    try:
-        # 尝试导入 playwright.sync_api 来检查 Playwright 是否已安装
-        import playwright.sync_api
-    except ImportError:
+    if importlib.util.find_spec("playwright") is None:
         print("Playwright 未安装。正在安装 Playwright...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "playwright"])
+        result = await install_package("playwright")
+        if result != 0:
+            print("安装 Playwright 时出错")
+            sys.exit(1)
 
-    print("正在检查并安装必要的浏览器...")
-    result = subprocess.run(
-        [sys.executable, "-m", "playwright", "install"],
-        capture_output=True,
-        text=True
-    )
-    if result.returncode != 0:
-        print("安装浏览器时出错:")
-        print(result.stderr)
+    result = await install_playwright_browsers()
+    if result != 0:
+        print("安装浏览器时出错")
         sys.exit(1)
     print("浏览器安装完成。")
-
 
 
 
