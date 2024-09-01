@@ -61,7 +61,7 @@ async def ensure_playwright_browsers():
 
 
 
-async def login_async():
+async def login_async(headless=None):
     try:
         global COUNTS
         COUNTS += 1
@@ -69,7 +69,8 @@ async def login_async():
         await ensure_playwright_browsers()
         async with async_playwright() as playwright:
             passwords_manager = PassWordsManager()
-            browser = await playwright.chromium.launch(headless=get_settings().HEAD_LESS)
+            __headless = headless if headless is not None else get_settings().HEAD_LESS
+            browser = await playwright.chromium.launch(headless=__headless)
             page = await browser.new_page()
             try:
                 await page.goto(url=get_settings().LOGIN_URL, timeout=1000)

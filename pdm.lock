@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:6b9e5713ec2e22b4f296d81269aad68b7f4870a056f268eb8e40ec434fcf644e"
+content_hash = "sha256:50232df3264c21fdadf22cbc093d2a2db1abc9f4ac6871f0711067b999696bcc"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -54,6 +54,101 @@ files = [
 ]
 
 [[package]]
+name = "cx-freeze"
+version = "7.2.0"
+requires_python = ">=3.8"
+summary = "Create standalone executables from Python scripts"
+groups = ["default"]
+dependencies = [
+    "cx-Logging>=3.1; sys_platform == \"win32\"",
+    "dmgbuild>=1.6.1; sys_platform == \"darwin\"",
+    "filelock>=3.12.3; sys_platform == \"linux\"",
+    "lief<0.15.0,>=0.12.0; sys_platform == \"win32\"",
+    "patchelf>=0.14; sys_platform == \"linux\" and platform_machine == \"aarch64\"",
+    "patchelf>=0.14; sys_platform == \"linux\" and platform_machine == \"armv7l\"",
+    "patchelf>=0.14; sys_platform == \"linux\" and platform_machine == \"i686\"",
+    "patchelf>=0.14; sys_platform == \"linux\" and platform_machine == \"ppc64le\"",
+    "patchelf>=0.14; sys_platform == \"linux\" and platform_machine == \"s390x\"",
+    "patchelf>=0.14; sys_platform == \"linux\" and platform_machine == \"x86_64\"",
+    "setuptools<71,>=65.6.3",
+    "typing-extensions>=4.10.0; python_version < \"3.10\"",
+    "wheel<=0.43.0,>=0.42.0",
+]
+files = [
+    {file = "cx_Freeze-7.2.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:f7cf98f63c85fc2f947a7f68548136d60dfd7927a464d1cd38239a75b730f7f7"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:7f988be0ad19be0df357102fae21553f36cc4f83b4e881888e3512d1a2bcb8ba"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:98491338f6dcf52f8ee4d872d08aeae0c91466a47383ad19d1332a565f7c4df8"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:51a2f286ff58e04510b6af87c055b6fca36045a0fb785cd966f38aa70f86c3ce"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:43e6c1ccaf9be9010a0e8a8c33edc7671dd0a6f8c49ab2bcd9f49ce0960089e0"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:64c3f734cff3620d5ecc474d59a753cae52ba96b52e0a9ade803a70699be1bc1"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:d68f2ec4c0c456c6f1ca5e623f240f27fb63ae65970a16e04689863b03a16c7e"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-musllinux_1_2_ppc64le.whl", hash = "sha256:77e2362f075b242a99e041afb9a49693a60c102b9b1df67f6387c87fde02e34f"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:a51b97024401d5cfaa392caef8b150bf91e62c0fdcb6a68372959c6ff28349d3"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-win32.whl", hash = "sha256:19fb97c8481266931c5fd5cc380b12fb09053258413ebaf6760d5063e5ffde41"},
+    {file = "cx_Freeze-7.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:e61692176a8803e0853ca115cede397942c1cee9e20c8eb5798613d0b92dd75d"},
+    {file = "cx_freeze-7.2.0.tar.gz", hash = "sha256:c57f7101b4d35132464b1ec88cb8948c3b7c5b4ece4bb354c16091589cb33583"},
+]
+
+[[package]]
+name = "cx-logging"
+version = "3.2.0"
+requires_python = ">=3.8"
+summary = "Python and C interfaces for logging"
+groups = ["default"]
+marker = "sys_platform == \"win32\""
+files = [
+    {file = "cx_Logging-3.2.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:031fe74ca61bf6084d64e835a7801b3c8d8758737fcadae234ba8b09a16d1368"},
+    {file = "cx_Logging-3.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2d29550bec4fdd7ce05b23ae6d3539a33060feb24ff39d5cbb89925d59b018b7"},
+    {file = "cx_Logging-3.2.0-cp312-cp312-win32.whl", hash = "sha256:4328097f6034be241e02146af8e199382e7f30019272c26768e4cd3e5122d3f9"},
+    {file = "cx_Logging-3.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:2496386a36f63233fe77e7e68539910b9429df2f922be1af71309be59dca11f3"},
+    {file = "cx_Logging-3.2.0.tar.gz", hash = "sha256:bdbad6d2e6a0cc5bef962a34d7aa1232e88ea9f3541d6e2881675b5e7eab5502"},
+]
+
+[[package]]
+name = "dmgbuild"
+version = "1.6.2"
+requires_python = ">=3.8"
+summary = "macOS command line utility to build disk images"
+groups = ["default"]
+marker = "sys_platform == \"darwin\""
+dependencies = [
+    "ds-store>=1.1.0",
+    "importlib-resources==5.9; python_version <= \"3.8\"",
+    "mac-alias>=2.0.1",
+]
+files = [
+    {file = "dmgbuild-1.6.2-py3-none-any.whl", hash = "sha256:f78200b992027ccd2aa63872ed6ed11464e9149249303b8eee477e65280993d1"},
+    {file = "dmgbuild-1.6.2.tar.gz", hash = "sha256:dba01d29f10c6804f2d72301600ddd03724daa41cd21a95409c44a3e199b19aa"},
+]
+
+[[package]]
+name = "ds-store"
+version = "1.3.1"
+requires_python = ">=3.7"
+summary = "Manipulate Finder .DS_Store files from Python"
+groups = ["default"]
+marker = "sys_platform == \"darwin\""
+dependencies = [
+    "mac-alias>=2.0.1",
+]
+files = [
+    {file = "ds_store-1.3.1-py3-none-any.whl", hash = "sha256:fbacbb0bd5193ab3e66e5a47fff63619f15e374ffbec8ae29744251a6c8f05b5"},
+    {file = "ds_store-1.3.1.tar.gz", hash = "sha256:c27d413caf13c19acb85d75da4752673f1f38267f9eb6ba81b3b5aa99c2d207c"},
+]
+
+[[package]]
+name = "filelock"
+version = "3.15.4"
+requires_python = ">=3.8"
+summary = "A platform independent file lock."
+groups = ["default"]
+marker = "sys_platform == \"linux\""
+files = [
+    {file = "filelock-3.15.4-py3-none-any.whl", hash = "sha256:6ca1fffae96225dab4c6eaf1c4f4f28cd2568d3ec2a44e15a08520504de468e7"},
+    {file = "filelock-3.15.4.tar.gz", hash = "sha256:2207938cbc1844345cb01a5a95524dae30f0ce089eba5b00378295a17e3e90cb"},
+]
+
+[[package]]
 name = "greenlet"
 version = "3.0.3"
 requires_python = ">=3.7"
@@ -73,6 +168,22 @@ files = [
 ]
 
 [[package]]
+name = "lief"
+version = "0.14.1"
+requires_python = ">=3.8"
+summary = "Library to instrument executable formats"
+groups = ["default"]
+marker = "sys_platform == \"win32\""
+files = [
+    {file = "lief-0.14.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:6df40e3750b8b26f88a6b28ac01db7338cdb6158f28363c755bf36452ce20d28"},
+    {file = "lief-0.14.1-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:e7f7a55db2fcf269569f9e9fa5ea752620396de17bd9d29fc8b29e176975ecdb"},
+    {file = "lief-0.14.1-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:50795b51884b76a78c481d6d069d992561c217180bd81cf12554180389eff0a3"},
+    {file = "lief-0.14.1-cp312-cp312-manylinux_2_28_x86_64.manylinux_2_27_x86_64.whl", hash = "sha256:497b88f9c9aaae999766ba188744ee35c5f38b4b64016f7dbb7037e9bf325382"},
+    {file = "lief-0.14.1-cp312-cp312-win32.whl", hash = "sha256:08bad88083f696915f8dcda4042a3bfc514e17462924ec8984085838b2261921"},
+    {file = "lief-0.14.1-cp312-cp312-win_amd64.whl", hash = "sha256:e131d6158a085f8a72124136816fefc29405c725cd3695ce22a904e471f0f815"},
+]
+
+[[package]]
 name = "loguru"
 version = "0.7.2"
 requires_python = ">=3.5"
@@ -86,6 +197,34 @@ dependencies = [
 files = [
     {file = "loguru-0.7.2-py3-none-any.whl", hash = "sha256:003d71e3d3ed35f0f8984898359d65b79e5b21943f78af86aa5491210429b8eb"},
     {file = "loguru-0.7.2.tar.gz", hash = "sha256:e671a53522515f34fd406340ee968cb9ecafbc4b36c679da03c18fd8d0bd51ac"},
+]
+
+[[package]]
+name = "mac-alias"
+version = "2.2.2"
+requires_python = ">=3.7"
+summary = "Generate/parse Mac OS Alias records from Python"
+groups = ["default"]
+marker = "sys_platform == \"darwin\""
+files = [
+    {file = "mac_alias-2.2.2-py3-none-any.whl", hash = "sha256:504ab8ac546f35bbd75ad014d6ad977c426660aa721f2cd3acf3dc2f664141bd"},
+    {file = "mac_alias-2.2.2.tar.gz", hash = "sha256:c99c728eb512e955c11f1a6203a0ffa8883b26549e8afe68804031aa5da856b7"},
+]
+
+[[package]]
+name = "patchelf"
+version = "0.17.2.1"
+summary = "A small utility to modify the dynamic linker and RPATH of ELF executables."
+groups = ["default"]
+marker = "sys_platform == \"linux\" and (platform_machine == \"aarch64\" or platform_machine == \"armv7l\" or platform_machine == \"i686\" or platform_machine == \"ppc64le\" or platform_machine == \"s390x\" or platform_machine == \"x86_64\")"
+files = [
+    {file = "patchelf-0.17.2.1-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:fc329da0e8f628bd836dfb8eaf523547e342351fa8f739bf2b3fe4a6db5a297c"},
+    {file = "patchelf-0.17.2.1-py2.py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.musllinux_1_1_armv7l.whl", hash = "sha256:ccb266a94edf016efe80151172c26cff8c2ec120a57a1665d257b0442784195d"},
+    {file = "patchelf-0.17.2.1-py2.py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.musllinux_1_1_ppc64le.whl", hash = "sha256:f47b5bdd6885cfb20abdd14c707d26eb6f499a7f52e911865548d4aa43385502"},
+    {file = "patchelf-0.17.2.1-py2.py3-none-manylinux_2_17_s390x.manylinux2014_s390x.musllinux_1_1_s390x.whl", hash = "sha256:a9e6ebb0874a11f7ed56d2380bfaa95f00612b23b15f896583da30c2059fcfa8"},
+    {file = "patchelf-0.17.2.1-py2.py3-none-manylinux_2_5_i686.manylinux1_i686.musllinux_1_1_i686.whl", hash = "sha256:3c8d58f0e4c1929b1c7c45ba8da5a84a8f1aa6a82a46e1cfb2e44a4d40f350e5"},
+    {file = "patchelf-0.17.2.1-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.musllinux_1_1_x86_64.whl", hash = "sha256:d1a9bc0d4fd80c038523ebdc451a1cce75237cfcc52dbd1aca224578001d5927"},
+    {file = "patchelf-0.17.2.1.tar.gz", hash = "sha256:a6eb0dd452ce4127d0d5e1eb26515e39186fa609364274bc1b0b77539cfa7031"},
 ]
 
 [[package]]
@@ -180,6 +319,50 @@ files = [
 ]
 
 [[package]]
+name = "pyqt5"
+version = "5.15.11"
+requires_python = ">=3.8"
+summary = "Python bindings for the Qt cross platform application toolkit"
+groups = ["default"]
+dependencies = [
+    "PyQt5-Qt5<5.16.0,>=5.15.2",
+    "PyQt5-sip<13,>=12.15",
+]
+files = [
+    {file = "PyQt5-5.15.11-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:c8b03dd9380bb13c804f0bdb0f4956067f281785b5e12303d529f0462f9afdc2"},
+    {file = "PyQt5-5.15.11-cp38-abi3-macosx_11_0_x86_64.whl", hash = "sha256:6cd75628f6e732b1ffcfe709ab833a0716c0445d7aec8046a48d5843352becb6"},
+    {file = "PyQt5-5.15.11-cp38-abi3-manylinux_2_17_x86_64.whl", hash = "sha256:cd672a6738d1ae33ef7d9efa8e6cb0a1525ecf53ec86da80a9e1b6ec38c8d0f1"},
+    {file = "PyQt5-5.15.11-cp38-abi3-win32.whl", hash = "sha256:76be0322ceda5deecd1708a8d628e698089a1cea80d1a49d242a6d579a40babd"},
+    {file = "PyQt5-5.15.11-cp38-abi3-win_amd64.whl", hash = "sha256:bdde598a3bb95022131a5c9ea62e0a96bd6fb28932cc1619fd7ba211531b7517"},
+    {file = "PyQt5-5.15.11.tar.gz", hash = "sha256:fda45743ebb4a27b4b1a51c6d8ef455c4c1b5d610c90d2934c7802b5c1557c52"},
+]
+
+[[package]]
+name = "pyqt5-qt5"
+version = "5.15.14"
+summary = "The subset of a Qt installation needed by PyQt5."
+groups = ["default"]
+files = [
+    {file = "PyQt5_Qt5-5.15.14-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:c89b35b2aaf24d2805cc76fe31880c77b7f7557db8aafb26f1015f1bba7031d6"},
+    {file = "PyQt5_Qt5-5.15.14-py3-none-macosx_11_0_arm64.whl", hash = "sha256:730da7e6a97f6bad1b6df21082fe625647730418bc83e20cbc2ff6401ed0a8be"},
+    {file = "PyQt5_Qt5-5.15.14-py3-none-manylinux2014_x86_64.whl", hash = "sha256:aa3911276b1a1aa9b5b9cba687ef905faddd706980d34e234312591c3d3cbef8"},
+]
+
+[[package]]
+name = "pyqt5-sip"
+version = "12.15.0"
+requires_python = ">=3.8"
+summary = "The sip module support for PyQt5"
+groups = ["default"]
+files = [
+    {file = "PyQt5_sip-12.15.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:852b75cf208825602480e95ab63314108f872d0da251e9ad3deaaff5a183a6f5"},
+    {file = "PyQt5_sip-12.15.0-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:0cd21c3215e3c47fdd5fa7a2dc3dd1e07a7230b0626e905a7217925068c788b9"},
+    {file = "PyQt5_sip-12.15.0-cp312-cp312-win32.whl", hash = "sha256:b58eeedc9b2a3037b136bf96915196c391a33be470ed1c0723d7163ef0b727a2"},
+    {file = "PyQt5_sip-12.15.0-cp312-cp312-win_amd64.whl", hash = "sha256:24a1d4937332bf0a38dd95bb2ce4d89723df449f6e912b52ef0e107e11fefac1"},
+    {file = "PyQt5_sip-12.15.0.tar.gz", hash = "sha256:d23fdfcf363b5cedd9d39f8a9c5710e7d52804f5b08a58e91c638b36eafcb702"},
+]
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.1"
 requires_python = ">=3.8"
@@ -198,6 +381,17 @@ groups = ["default"]
 files = [
     {file = "pytz-2024.1-py2.py3-none-any.whl", hash = "sha256:328171f4e3623139da4983451950b28e95ac706e13f3f2630a879749e7a8b319"},
     {file = "pytz-2024.1.tar.gz", hash = "sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812"},
+]
+
+[[package]]
+name = "setuptools"
+version = "70.3.0"
+requires_python = ">=3.8"
+summary = "Easily download, build, install, upgrade, and uninstall Python packages"
+groups = ["default"]
+files = [
+    {file = "setuptools-70.3.0-py3-none-any.whl", hash = "sha256:fe384da74336c398e0d956d1cae0669bc02eed936cdb1d49b57de1990dc11ffc"},
+    {file = "setuptools-70.3.0.tar.gz", hash = "sha256:f171bab1dfbc86b132997f26a119f6056a57950d058587841a0082e8830f9dc5"},
 ]
 
 [[package]]
@@ -247,6 +441,17 @@ dependencies = [
 files = [
     {file = "tzlocal-5.2-py3-none-any.whl", hash = "sha256:49816ef2fe65ea8ac19d19aa7a1ae0551c834303d5014c6d5a62e4cbda8047b8"},
     {file = "tzlocal-5.2.tar.gz", hash = "sha256:8d399205578f1a9342816409cc1e46a93ebd5755e39ea2d85334bea911bf0e6e"},
+]
+
+[[package]]
+name = "wheel"
+version = "0.43.0"
+requires_python = ">=3.8"
+summary = "A built-package format for Python"
+groups = ["default"]
+files = [
+    {file = "wheel-0.43.0-py3-none-any.whl", hash = "sha256:55c570405f142630c6b9f72fe09d9b67cf1477fcf543ae5b8dcb1f5b7377da81"},
+    {file = "wheel-0.43.0.tar.gz", hash = "sha256:465ef92c69fa5c5da2d1cf8ac40559a8c940886afcef87dcf14b9470862f1d85"},
 ]
 
 [[package]]

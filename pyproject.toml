@@ -11,6 +11,8 @@ dependencies = [
     "loguru>=0.7.2",
     "pydantic-settings>=2.4.0",
     "apscheduler>=3.10.4",
+    "pyqt5>=5.15.11",
+    "cx-Freeze>=7.2.0",
 ]
 requires-python = "==3.12.*"
 readme = "README.md"
