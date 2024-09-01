@@ -17,7 +17,7 @@ target_dir = ""
 build_exe_options = {
     "packages": ["os", "sys", "PyQt5",
                  "pydantic", "apscheduler", "playwright", "loguru", "tzlocal"],
-    "excludes": ["http", "email"],
+    "excludes": ["http", "email", "tkinter"]
     # "zip_include_packages": ["*"],  # 压缩所有包
     # "zip_exclude_packages": [],  # 不排除任何包从压缩中
     # "optimize": 2  # Python 代码优化级别
