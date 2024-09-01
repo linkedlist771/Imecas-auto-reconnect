@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import subprocess
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
@@ -27,6 +28,7 @@ from pydantic import BaseModel
 from configs import get_settings, SettingsManager
 from login_manager import login_async
 
+login_counts = 0
 
 class LoginThread(QThread):
     update_signal = pyqtSignal(str)
@@ -45,6 +47,9 @@ class LoginThread(QThread):
     async def login_loop(self):
         while self.is_running:
             try:
+                global login_counts
+                login_counts += 1
+                self.update_signal.emit(f"第 {login_counts} 次登录")
                 await login_async(self.headless)
                 self.update_signal.emit("登录成功")
             except Exception as e:
@@ -53,6 +58,55 @@ class LoginThread(QThread):
 
     def stop(self):
         self.is_running = False
+
+
+class InstallThread(QThread):
+    update_signal = pyqtSignal(str)
+    progress_signal = pyqtSignal(int)
+    finished_signal = pyqtSignal()
+
+    def run(self):
+        self.ensure_playwright_browsers()
+        self.finished_signal.emit()
+
+    def run_command(self, cmd):
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True
+        )
+
+        for line in process.stdout:
+            self.update_signal.emit(line.strip())
+            self.progress_signal.emit(1)
+
+        return process.wait()
+
+    def install_package(self, package):
+        self.update_signal.emit(f"正在安装 {package}...")
+        cmd = [sys.executable, "-m", "pip", "install", package]
+        return self.run_command(cmd)
+
+    def install_playwright_browsers(self):
+        self.update_signal.emit("正在检查并安装必要的浏览器...")
+        cmd = [sys.executable, "-m", "playwright", "install"]
+        return self.run_command(cmd)
+
+    def ensure_playwright_browsers(self):
+        if importlib.util.find_spec("playwright") is None:
+            self.update_signal.emit("Playwright 未安装。正在安装 Playwright...")
+            result = self.install_package("playwright")
+            if result != 0:
+                self.update_signal.emit("安装 Playwright 时出错")
+                return
+
+        result = self.install_playwright_browsers()
+        if result != 0:
+            self.update_signal.emit("安装浏览器时出错")
+            return
+
+        self.update_signal.emit("浏览器安装完成。")
 
 class ClientSettings(BaseModel):
     headless: bool
@@ -70,6 +124,7 @@ class CustomForm(QMainWindow, Ui_mainWindow):
         self.startButton.clicked.connect(self.on_start_button_clicked)
         self.login_thread = None
         self.is_running = False
+        self.install_thread = None
 
 
 
@@ -102,72 +157,47 @@ class CustomForm(QMainWindow, Ui_mainWindow):
         self.insert_text("修改配置完成, 已保存", "green")
 
     def install_requirements(self):
-        self.progress_dialog = QProgressDialog("正在安装依赖...", "取消", 0, 100, self)
-        self.progress_dialog.setWindowModality(Qt.WindowModal)
-        self.progress_dialog.setWindowTitle("安装进度")
-        self.progress_dialog.show()
+        self.insert_text("正在检查并安装必要的浏览器...", "blue")
+        self.ensure_playwright_browsers()
+        self.insert_text("依赖安装完成", "green")
 
-        try:
-            # 创建事件循环
-            self.loop = asyncio.get_event_loop()
-            self.loop.run_until_complete(self.ensure_playwright_browsers())
-        except Exception as e:
-            self.insert_text(f"安装过程中发生错误: {str(e)}", "red")
-        finally:
-            if self.progress_dialog:
-                self.progress_dialog.close()
-
-    async def run_command(self, cmd):
-        process = await asyncio.create_subprocess_exec(
-            *cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+    def run_command(self, cmd):
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True
         )
 
-        async def read_stream(stream):
-            while True:
-                line = await stream.readline()
-                if line:
-                    self.insert_text(line.decode().strip(), "blue")
-                    self.progress_dialog.setValue(self.progress_dialog.value() + 1)
-                    QApplication.processEvents()
-                else:
-                    break
+        for line in process.stdout:
+            self.insert_text(line.strip(), "blue")
 
-        await asyncio.gather(
-            read_stream(process.stdout),
-            read_stream(process.stderr)
-        )
+        return process.wait()
 
-        return await process.wait()
-
-    async def install_package(self, package):
-        self.insert_text(f"正在安装 {package}...", "green")
+    def install_package(self, package):
+        self.insert_text(f"正在安装 {package}...", "blue")
         cmd = [sys.executable, "-m", "pip", "install", package]
-        return await self.run_command(cmd)
+        return self.run_command(cmd)
 
-    async def install_playwright_browsers(self):
-        self.insert_text("正在检查并安装必要的浏览器...", "green")
+    def install_playwright_browsers(self):
+        self.insert_text("正在检查并安装必要的浏览器...", "blue")
         cmd = [sys.executable, "-m", "playwright", "install"]
-        return await self.run_command(cmd)
+        return self.run_command(cmd)
 
-    async def ensure_playwright_browsers(self):
+    def ensure_playwright_browsers(self):
         if importlib.util.find_spec("playwright") is None:
-            self.insert_text("Playwright 未安装。正在安装 Playwright...", "green")
-            result = await self.install_package("playwright")
+            self.insert_text("Playwright 未安装。正在安装 Playwright...", "blue")
+            result = self.install_package("playwright")
             if result != 0:
                 self.insert_text("安装 Playwright 时出错", "red")
-                self.progress_dialog.close()
                 return
 
-        result = await self.install_playwright_browsers()
+        result = self.install_playwright_browsers()
         if result != 0:
             self.insert_text("安装浏览器时出错", "red")
-            self.progress_dialog.close()
             return
 
         self.insert_text("浏览器安装完成。", "green")
-        self.progress_dialog.close()
 
     def start_task(self):
         self.insert_text("开始修改配置", "green")

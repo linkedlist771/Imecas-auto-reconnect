@@ -30,7 +30,9 @@ executables = [
     Executable(
         script="gui.py",
         base=base,
+
     )
+
 ]
 
 setup(

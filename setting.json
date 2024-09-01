@@ -1,5 +1,5 @@
 {
   "LOGIN_URL": "https://passport.escience.cn/oauth2/authorize?client_id=47447&redirect_uri=https%3A%2F%2Fwired.ime.ac.cn%2Fsrun_portal_sso&response_type=code&state=1&theme=simple",
-  "RECONNECT_INTERVAL_MINUTES": 60,
-  "HEAD_LESS": false
+  "RECONNECT_INTERVAL_MINUTES": 1,
+  "HEAD_LESS": true
 }
