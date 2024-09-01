@@ -2,8 +2,8 @@ import asyncio
 from playwright.async_api import async_playwright
 from playwright.async_api import TimeoutError as PlaywrightTimeOut
 
-from src.imecas_auto_reconnect.configs import get_settings
-from src.imecas_auto_reconnect.passwords_manager import PassWordsManager
+from configs import get_settings
+from passwords_manager import PassWordsManager
 import subprocess
 import sys
 import importlib.util

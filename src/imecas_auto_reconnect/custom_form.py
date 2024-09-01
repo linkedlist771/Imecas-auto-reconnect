@@ -24,8 +24,8 @@ import importlib.util
 
 from pydantic import BaseModel
 
-from src.imecas_auto_reconnect.configs import get_settings, SettingsManager
-from src.imecas_auto_reconnect.login_manager import login_async
+from configs import get_settings, SettingsManager
+from login_manager import login_async
 
 
 class LoginThread(QThread):

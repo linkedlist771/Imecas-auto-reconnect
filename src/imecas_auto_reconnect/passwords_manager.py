@@ -1,4 +1,4 @@
-from src.imecas_auto_reconnect.configs import CONFIG_JSON_PATH
+from configs import CONFIG_JSON_PATH
 import json
 import tkinter as tk
 from tkinter import messagebox
