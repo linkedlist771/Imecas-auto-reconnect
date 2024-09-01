@@ -1,5 +1,8 @@
 import asyncio
+import time
+
 from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
 from playwright.async_api import TimeoutError as PlaywrightTimeOut
 
 from configs import get_settings
@@ -100,6 +103,48 @@ async def login_async(headless=None):
         print_exc()
     finally:
         await browser.close()
+
+
+# write a login which as syn
+
+def login_sync(headless=None):
+    try:
+        global COUNTS
+        COUNTS += 1
+        logger.info(f"开始登录到 {get_settings().LOGIN_URL}, 第 {COUNTS} 次")
+        ensure_playwright_browsers()
+        with sync_playwright() as playwright:
+            passwords_manager = PassWordsManager()
+            __headless = headless if headless is not None else get_settings().HEAD_LESS
+            browser = playwright.chromium.launch(headless=__headless)
+            page = browser.new_page()
+            try:
+                page.goto(url=get_settings().LOGIN_URL, timeout=1000)
+            except PlaywrightTimeOut:
+                pass
+            time.sleep(2)
+            # Perform page operations
+            page.fill('input[id="userName"]', passwords_manager.username)
+            page.fill('input[id="password"]', passwords_manager.password)
+            page.click('input[type="submit"]')  # type="submit" id="loginBtn"
+
+            # Wait for page to load
+            page.wait_for_selector('.some-element')
+
+            # Get page content
+            content = page.content()
+            print(content)
+
+            # Take screenshot
+            page.screenshot(path="screenshot.png")
+
+            browser.close()
+    except Exception as e:
+        # format exc
+        from traceback import print_exc
+        print_exc()
+    finally:
+        browser.close()
 
 
 # Run the async function

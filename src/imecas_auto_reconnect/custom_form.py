@@ -26,7 +26,7 @@ import importlib.util
 from pydantic import BaseModel
 
 from configs import get_settings, SettingsManager
-from login_manager import login_async
+from login_manager import login_sync
 
 login_counts = 0
 
@@ -40,21 +40,23 @@ class LoginThread(QThread):
         self.headless = headless
 
     def run(self):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(self.login_loop())
+        # loop = asyncio.new_event_loop()
+        # asyncio.set_event_loop(loop)
+        # loop.run_until_complete(self.login_loop())
+        self.login_loop()
 
-    async def login_loop(self):
+    def login_loop(self):
         while self.is_running:
             try:
                 global login_counts
                 login_counts += 1
                 self.update_signal.emit(f"第 {login_counts} 次登录")
-                await login_async(self.headless)
+                login_sync(self.headless)
                 self.update_signal.emit("登录成功")
             except Exception as e:
                 self.update_signal.emit(f"登录失败: {str(e)}")
-            await asyncio.sleep(self.interval_minutes * 60)
+            # await asyncio.sleep(self.interval_minutes * 60)
+            time.sleep(self.interval_minutes * 60)
 
     def stop(self):
         self.is_running = False
