@@ -112,7 +112,6 @@ def login_sync(headless=None):
         global COUNTS
         COUNTS += 1
         logger.info(f"开始登录到 {get_settings().LOGIN_URL}, 第 {COUNTS} 次")
-        ensure_playwright_browsers()
         with sync_playwright() as playwright:
             passwords_manager = PassWordsManager()
             __headless = headless if headless is not None else get_settings().HEAD_LESS
