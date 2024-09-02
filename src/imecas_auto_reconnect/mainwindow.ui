@@ -20,7 +20,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget#centralwidget {
-    background-image: url(background.jpg);
+    background-image: url(resized_background.jpeg);
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
