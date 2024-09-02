@@ -14,10 +14,17 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
-        mainWindow.resize(511, 600)
+        mainWindow.resize(462, 600)
         font = QtGui.QFont()
         font.setPointSize(12)
         mainWindow.setFont(font)
+        mainWindow.setStyleSheet("QWidget#centralwidget {\n"
+"    background-image: url(resized_background.jpeg);\n"
+"    background-position: center;\n"
+"    background-repeat: no-repeat;\n"
+"    background-attachment: fixed;\n"
+"    background-size: cover;\n"
+"}")
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label_8 = QtWidgets.QLabel(self.centralwidget)
@@ -81,7 +88,7 @@ class Ui_mainWindow(object):
         self.verticalLayout_4.addLayout(self.verticalLayout_3)
         self.horizontalLayout_2.addLayout(self.verticalLayout_4)
         self.outputEditText = QtWidgets.QTextEdit(self.centralwidget)
-        self.outputEditText.setGeometry(QtCore.QRect(0, 60, 501, 201))
+        self.outputEditText.setGeometry(QtCore.QRect(0, 60, 461, 201))
         font = QtGui.QFont()
         font.setPointSize(20)
         self.outputEditText.setFont(font)
@@ -93,7 +100,7 @@ class Ui_mainWindow(object):
         self.outputEditText.setObjectName("outputEditText")
         mainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(mainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 511, 37))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 462, 37))
         self.menubar.setObjectName("menubar")
         self.menu = QtWidgets.QMenu(self.menubar)
         self.menu.setObjectName("menu")
