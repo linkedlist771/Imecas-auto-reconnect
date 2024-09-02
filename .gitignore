@@ -8,6 +8,7 @@ __pycache__/
 config.json
 .idea
 *zip
+electron_base/node_modules
 
 # Distribution / packaging
 .Python
