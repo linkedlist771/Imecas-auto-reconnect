@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "target": "ES2018",  // 添加这行，设置为 ES2018 或更高
+    "lib": ["DOM", "ES2018", "ESNext"],  // 添加这行
     "noImplicitAny": true,
     "sourceMap": true,
     "outDir": "dist",
@@ -8,10 +10,18 @@
     "paths": {
       "*": ["node_modules/*"]
     },
-    "types": ["node", "electron"]
+    "types": ["node", "electron"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+
+    "esModuleInterop": true,  // 添加这行
+    "resolveJsonModule": true,  // 添加这行
+    "strict": true,  // 添加这行，增强类型检查
+    "moduleResolution": "node" , // 添加这行
 
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "global.d.ts"
+
   ]
 }

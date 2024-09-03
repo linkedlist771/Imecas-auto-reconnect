@@ -9,16 +9,21 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url('resized_background.jpeg');
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             background-position: center;
             background-repeat: no-repeat;
-            background-attachment: fixed;
             background-size: cover;
         }
         .container {
-            max-width: 462px;
-            margin: 0 auto;
+            width: 600px;
             padding: 20px;
+            transition: filter 0.5s;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
         }
         h1 {
             font-size: 14px;
@@ -28,10 +33,12 @@
             width: 100%;
             height: 201px;
             background-color: black;
-            color: blue;
+            color: white;
             font-size: 20px;
             margin-bottom: 20px;
-            resize: none;
+            overflow-y: auto;
+            padding: 5px;
+            box-sizing: border-box;
         }
         .form-group {
             margin-bottom: 15px;
@@ -55,25 +62,77 @@
         button:hover {
             background-color: #45a049;
         }
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .splash-content {
+            width: 462px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            text-align: center;
+        }
+        #splash-text {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        #splash-progress {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #splash-progress-bar {
+            width: 0%;
+            height: 25px;
+            background-color: #4CAF50;
+            transition: width 0.5s;
+        }
+        .blur {
+            filter: blur(5px);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div id="splash-text">水之女王即将登场...</div>
+            <div id="splash-progress">
+                <div id="splash-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
         <h1>处理情况</h1>
-        <textarea class="output" id="outputEditText" readonly></textarea>
+        <div class="output" id="outputEditText"></div>
 
         <div class="form-group">
-            <label for="runningIntervalCombo">运行频率(多少分钟一次)</label>
+            <label for="runningIntervalCombo">水之礼赞频率（每隔多久登录一次）</label>
             <select id="runningIntervalCombo">
-                <option value="60">60</option>
-                <option value="1">1</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="30">30</option>
-                <option value="120">120</option>
-                <option value="240">240</option>
-                <option value="480">480</option>
+                <option value="1">每1分钟一次轻涟</option>
+                <option value="5">每5分钟一次涟漪</option>
+                <option value="10">每10分钟一次波澜</option>
+                <option value="15">每15分钟一次潮汐</option>
+                <option value="30">每30分钟一次浪潮</option>
+                <option value="60" selected>每1小时一次汪洋</option>
+                <option value="120">每2小时一次海啸</option>
+                <option value="240">每4小时一次洪流</option>
+                <option value="480">每8小时一次洋流</option>
             </select>
         </div>
 
@@ -88,6 +147,48 @@
         <button id="startButton">启动</button>
     </div>
 
-    <script src="renderer.js"></script>
+    <script src="./dist/renderer.js"></script>
+    <script>
+        const mainContainer = document.getElementById('main-container');
+        const splashScreen = document.getElementById('splash-screen');
+        const progressBar = document.getElementById('splash-progress-bar');
+
+        function getRandomBackground() {
+            const backgrounds = ['back1.jpeg', 'back2.jpeg', 'back3.jpeg'];
+            return backgrounds[Math.floor(Math.random() * backgrounds.length)];
+        }
+
+        function setRandomBackground() {
+            const randomBackground = getRandomBackground();
+            document.body.style.backgroundImage = `url('${randomBackground}')`;
+            splashScreen.style.backgroundImage = `url('${randomBackground}')`;
+        }
+
+        function simulateLoading(totalLoadTime = 3000) {
+            const steps = 100;
+            const delay = totalLoadTime / steps;
+            let progress = 0;
+
+            mainContainer.classList.add('blur');
+
+            function loadStep() {
+                if (progress < steps) {
+                    progress++;
+                    progressBar.style.width = `${progress}%`;
+                    setTimeout(loadStep, delay);
+                } else {
+                    splashScreen.style.display = 'none';
+                    mainContainer.classList.remove('blur');
+                }
+            }
+
+            setTimeout(loadStep, 10);
+        }
+
+        window.addEventListener('load', () => {
+            setRandomBackground();
+            simulateLoading(3000); // 3 seconds loading time
+        });
+    </script>
 </body>
 </html>
