@@ -12,6 +12,10 @@ async function saveConfig(config: Config): Promise<boolean> {
   return window.electronAPI.saveConfig(config);
 }
 
+async function resetConfig(): Promise<boolean> {
+  return window.electronAPI.resetConfig();
+}
+
 function createCredentialsUI(): Promise<Config> {
   return new Promise((resolve) => {
     const modal = document.createElement('div');
@@ -115,6 +119,28 @@ function addOutput(message: string, outputEditText: HTMLTextAreaElement, color =
   outputEditText.innerHTML += coloredMessage + '<br>';
   outputEditText.scrollTop = outputEditText.scrollHeight;
 }
+
+
+const resetConfigButton = document.getElementById('resetConfigButton') as HTMLButtonElement;
+
+resetConfigButton.addEventListener('click', async () => {
+  const outputEditText = document.getElementById('outputEditText') as HTMLTextAreaElement;
+
+  try {
+    const defaultConfig = await resetConfig();
+    if (defaultConfig) {
+      // Update UI with default values
+
+      addOutput('配置已重置为默认值', outputEditText, 'green');
+    } else {
+      addOutput('重置配置失败', outputEditText, 'red');
+    }
+  } catch (error) {
+    console.error('Error resetting config:', error);
+    addOutput('重置配置时发生错误', outputEditText, 'red');
+  }
+});
+
 let intervalId: NodeJS.Timeout | null = null;
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('水之剧场已准备就绪');
@@ -162,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     console.log('水之幕帘已开启');
-    let config: Config | null = await loadConfig();
+    let config: Config | null = null;// await loadConfig();
 
     if (!config) {
       try {

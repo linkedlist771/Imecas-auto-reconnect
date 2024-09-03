@@ -133,5 +133,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loginWithPuppeteer: (username: string, password: string, loginUrl: string, headless: boolean) =>
     ipcRenderer.invoke('login-with-puppeteer', username, password, loginUrl, headless),
   loadConfig: () => ipcRenderer.invoke('load-config'),
+  resetConfig: () => ipcRenderer.invoke('reset-config'),
+
   saveConfig: (config: any) => ipcRenderer.invoke('save-config', config),
 });

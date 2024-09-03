@@ -62,19 +62,29 @@ async function loginWithPuppeteer(
     await page.goto(loginUrl, { timeout: 60000 });
 
     await page.waitForSelector('input[id="userName"]');
+    // 清空用户名输入框，然后输入
+    await page.$eval('input[id="userName"]', el => el.value = '');
     await page.type('input[id="userName"]', username);
+    const pageUrl = page.url();
+
+    // 清空密码输入框，然后输入
+    await page.$eval('input[id="password"]', el => el.value = '');
     await page.type('input[id="password"]', password);
+    await page.click('input[type="submit"]');
+    await page.click('input[type="submit"]');
     await page.click('input[type="submit"]');
 
     // 等待登录完成，这里假设登录后会出现某个特定元素
-    // await page.waitForSelector('.some-element', { timeout: 60000 });
-
-    const content = await page.content();
-    console.log('Login successful. Page content:', content);
-
-    // await page.screenshot({ path: 'login_screenshot.png' });
-
-    const pageUrl = page.url();
+    try {
+      await page.waitForSelector('.some-element', {timeout: 1000 * 5});
+    }
+    catch (error) {
+      console.error('Login failed:', error);
+    }
+    finally {
+      await page.close();
+      window.destroy()
+    }
     window.destroy();
     return pageUrl;
   } catch (error) {
@@ -120,6 +130,30 @@ ipcMain.handle('save-config', async (event, config) => {
     return true;
   } catch (error) {
     console.error('Error saving config:', error);
+    return false;
+  }
+});
+
+ipcMain.handle('reset-config', async () => {
+  try {
+
+    const configPath = path.join(__dirname, 'config.json');
+    // await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
+    //  删除这个文件
+   // Check if the file exists
+    const fileExists = await fs.promises.access(configPath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (fileExists) {
+      // If the file exists, delete it
+      await fs.promises.unlink(configPath);
+      console.log('Config file deleted successfully');
+    } else {
+      console.log('Config file does not exist, no deletion necessary');
+    }     return true;
+  } catch (error) {
+    console.error('Error resetting config:', error);
     return false;
   }
 });

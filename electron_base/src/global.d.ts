@@ -12,6 +12,7 @@ declare global {
       ) => Promise<string>;
       loadConfig: () => Promise<Config | null>;
       saveConfig: (config: Config) => Promise<boolean>;
+      resetConfig: () => Promise<boolean>;
     };
   }
 }
