@@ -21,29 +21,61 @@ async function saveConfig(config: Config): Promise<boolean> {
 async function resetConfig(): Promise<boolean> {
   return window.electronAPI.resetConfig();
 }
+function createTimerDisplay() {
+  const existingTimer = document.getElementById('timerDisplay');
+  if (existingTimer) {
+    return existingTimer;
+  }
+
+  const timerDisplay = document.createElement('div');
+  timerDisplay.id = 'timerDisplay';
+  timerDisplay.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    z-index: 999;
+    display: none;
+  `;
+  timerDisplay.textContent = '暂无任务';
+  document.body.appendChild(timerDisplay);
+  return timerDisplay;
+}
+
+
 function createCredentialsUI(): Promise<Config> {
   return new Promise((resolve) => {
     const modal = document.createElement('div');
     modal.innerHTML = `
       <style>
+        /* Modal Overlay */
         .modal {
           position: fixed;
           left: 0;
           top: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.7);
+          background: rgba(0, 0, 0, 0.7);
           backdrop-filter: blur(5px);
           display: flex;
           justify-content: center;
           align-items: center;
           font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-          animation: fadeIn 0.3s ease;
+          z-index: 1000;
         }
 
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+        /* Modal Content */
+        .modal-content {
+          background-color: #fff;
+          border-radius: 16px;
+          width: 90%;
+          max-width: 600px;
+          animation: slideIn 0.3s ease;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes slideIn {
@@ -51,39 +83,47 @@ function createCredentialsUI(): Promise<Config> {
           to { transform: translateY(0); opacity: 1; }
         }
 
-        .modal-content {
-          background-color: #ffffff;
-          padding: 2rem;
-          border-radius: 16px;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-          width: 90%;
-          max-width: 600px;
-          animation: slideIn 0.3s ease;
-          max-height: 90vh;
-          overflow-y: auto;
-          position: relative;
+        /* Header */
+        .modal-header {
+          background-color: #0078d4;
+          color: #fff;
+          padding: 20px;
+          text-align: center;
+          border-radius: 16px 16px 0 0;
         }
 
-        h2 {
-          margin: 0 0 1.5rem 0;
-          color: #1a1a1a;
-          text-align: center;
+        .modal-header h2 {
+          margin: 0;
           font-size: 1.5rem;
           font-weight: 600;
-          position: sticky;
-          top: 0;
-          background: #fff;
-          padding: 1rem 0;
-          z-index: 1;
         }
 
+        /* Body */
+        .modal-body {
+          padding: 20px;
+          max-height: calc(90vh - 180px);
+          overflow-y: auto;
+        }
+
+        /* Footer */
+        .modal-footer {
+          padding: 15px 20px;
+          background-color: #f8f9fa;
+          border-top: 1px solid #eee;
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          border-radius: 0 0 16px 16px;
+        }
+
+        /* Input Group */
         .input-group {
-          margin-bottom: 1.5rem;
+          margin-bottom: 20px;
         }
 
         label {
           display: block;
-          margin-bottom: 0.5rem;
+          margin-bottom: 8px;
           color: #4a4a4a;
           font-weight: 500;
           font-size: 0.9rem;
@@ -91,7 +131,7 @@ function createCredentialsUI(): Promise<Config> {
 
         input {
           width: 100%;
-          padding: 0.75rem 1rem;
+          padding: 12px;
           border: 2px solid #e0e0e0;
           border-radius: 8px;
           font-size: 1rem;
@@ -100,13 +140,14 @@ function createCredentialsUI(): Promise<Config> {
         }
 
         input:focus {
-          outline: none;
           border-color: #0078d4;
+          outline: none;
           box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
         }
 
+        /* Buttons */
         button {
-          padding: 0.75rem 1.5rem;
+          padding: 10px 20px;
           border: none;
           border-radius: 8px;
           font-size: 0.9rem;
@@ -115,64 +156,47 @@ function createCredentialsUI(): Promise<Config> {
           transition: all 0.2s ease;
           display: inline-flex;
           align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
+          gap: 8px;
         }
 
-        .primary-btn {
+        .button {
           background-color: #0078d4;
           color: white;
         }
 
-        .primary-btn:hover {
+        .button:hover {
           background-color: #006abe;
           transform: translateY(-1px);
         }
 
-        .secondary-btn {
-          background-color: #f3f3f3;
-          color: #333;
-        }
-
-        .secondary-btn:hover {
-          background-color: #e5e5e5;
-        }
-
-        .start-btn {
+        .button.green {
           background-color: #28a745;
-          color: white;
         }
 
-        .start-btn:hover {
+        .button.green:hover {
           background-color: #218838;
         }
 
-        button:disabled {
-          background-color: #e0e0e0;
-          color: #999;
+        .button.red {
+          background-color: #dc3545;
+        }
+
+        .button.red:hover {
+          background-color: #c82333;
+        }
+
+        .button:disabled {
+          background-color: #cccccc;
           cursor: not-allowed;
           transform: none;
         }
 
-        .button-group {
-          display: flex;
-          justify-content: flex-end;
-          gap: 0.75rem;
-          margin-top: 1.5rem;
-          position: sticky;
-          bottom: 0;
-          background: #fff;
-          padding: 1rem 0;
-          z-index: 1;
-        }
-
+        /* Account List */
         .accounts-list {
-          max-height: 300px;
-          overflow-y: auto;
-          margin-bottom: 1.5rem;
           border: 2px solid #f0f0f0;
           border-radius: 12px;
-          padding: 0.5rem;
+          overflow: hidden;
+          margin-bottom: 20px;
         }
 
         .accounts-list:empty::after {
@@ -185,38 +209,36 @@ function createCredentialsUI(): Promise<Config> {
         }
 
         .account-item {
-          padding: 1rem;
-          border-radius: 8px;
-          margin-bottom: 0.5rem;
-          background-color: #f8f9fa;
-          transition: all 0.2s ease;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          padding: 15px;
+          border-bottom: 1px solid #eee;
+          transition: all 0.2s ease;
         }
 
         .account-item:last-child {
-          margin-bottom: 0;
+          border-bottom: none;
         }
 
         .account-item:hover {
-          background-color: #f3f4f6;
+          background-color: #f8f9fa;
         }
 
         .account-item.selected {
           background-color: #e3f2fd;
-          border: 2px solid #0078d4;
+          border-left: 4px solid #0078d4;
         }
 
         .account-info {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 12px;
         }
 
         .account-avatar {
-          width: 32px;
-          height: 32px;
+          width: 36px;
+          height: 36px;
           background-color: #0078d4;
           border-radius: 50%;
           display: flex;
@@ -224,61 +246,52 @@ function createCredentialsUI(): Promise<Config> {
           justify-content: center;
           color: white;
           font-weight: 600;
+          font-size: 0.9rem;
         }
 
         .account-actions {
           display: flex;
-          gap: 0.5rem;
+          gap: 8px;
         }
 
-        .action-btn {
-          padding: 0.5rem;
-          border-radius: 6px;
-          font-size: 0.8rem;
-        }
-
+        /* Edit Form */
         .edit-form {
           display: none;
-          margin-top: 1.5rem;
-          padding: 1.5rem;
-          border-radius: 12px;
-          background-color: #f8f9fa;
-          border: 2px solid #f0f0f0;
           animation: slideIn 0.3s ease;
         }
 
-        /* Custom scrollbar */
-        .modal-content::-webkit-scrollbar,
-        .accounts-list::-webkit-scrollbar {
+        /* Scrollbar */
+        .modal-body::-webkit-scrollbar {
           width: 8px;
         }
 
-        .modal-content::-webkit-scrollbar-track,
-        .accounts-list::-webkit-scrollbar-track {
+        .modal-body::-webkit-scrollbar-track {
           background: #f1f1f1;
           border-radius: 4px;
         }
 
-        .modal-content::-webkit-scrollbar-thumb,
-        .accounts-list::-webkit-scrollbar-thumb {
+        .modal-body::-webkit-scrollbar-thumb {
           background: #c1c1c1;
           border-radius: 4px;
         }
 
-        .modal-content::-webkit-scrollbar-thumb:hover,
-        .accounts-list::-webkit-scrollbar-thumb:hover {
+        .modal-body::-webkit-scrollbar-thumb:hover {
           background: #a8a8a8;
         }
 
-        /* Responsive adjustments */
+        /* Responsive */
         @media (max-width: 640px) {
           .modal-content {
-            padding: 1.5rem;
             width: 95%;
+            margin: 10px;
           }
 
-          .button-group {
-            flex-wrap: wrap;
+          .account-actions {
+            flex-direction: column;
+          }
+
+          .modal-footer {
+            flex-direction: column;
           }
 
           button {
@@ -288,36 +301,50 @@ function createCredentialsUI(): Promise<Config> {
       </style>
       <div class="modal">
         <div class="modal-content">
-          <h2>账号管理</h2>
-          <div class="accounts-list" id="accountsList"></div>
-          <div id="editForm" class="edit-form">
-            <div class="input-group">
-              <label for="editUsername">账号：</label>
-              <input type="email" id="editUsername" placeholder="请输入邮箱" required>
-            </div>
-            <div class="input-group">
-              <label for="editPassword">密码：</label>
-              <input type="password" id="editPassword" placeholder="请输入密码" required>
-            </div>
-            <div class="button-group">
-              <button id="saveAccountBtn" class="primary-btn">保存</button>
-              <button id="cancelEditBtn" class="secondary-btn">取消</button>
+          <div class="modal-header">
+            <h2>账号管理</h2>
+          </div>
+          <div class="modal-body">
+            <div class="accounts-list" id="accountsList"></div>
+            <div id="editForm" class="edit-form">
+              <div class="input-group">
+                <label for="editUsername">账号：</label>
+                <input type="email" id="editUsername" placeholder="请输入邮箱" required>
+              </div>
+              <div class="input-group">
+                <label for="editPassword">密码：</label>
+                <input type="password" id="editPassword" placeholder="请输入密码" required>
+              </div>
+              <div class="modal-footer">
+                <button id="saveAccountBtn" class="button green">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M13.3 4.3l-7 7-3.6-3.6L4 6.3l2.3 2.3 5.7-5.7 1.3 1.4z" fill="currentColor"/>
+                  </svg>
+                  保存
+                </button>
+                <button id="cancelEditBtn" class="button red">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 6.6L3.4 2 2 3.4 6.6 8 2 12.6 3.4 14 8 9.4l4.6 4.6 1.4-1.4L9.4 8 14 3.4 12.6 2 8 6.6z" fill="currentColor"/>
+                  </svg>
+                  取消
+                </button>
+              </div>
             </div>
           </div>
-          <div class="button-group">
-            <button id="addAccountBtn" class="primary-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <div class="modal-footer">
+            <button id="addAccountBtn" class="button">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
               添加账号
             </button>
-            <button id="startBtn" class="start-btn" disabled>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 3L12 8L4 13V3Z" fill="currentColor"/>
+            <button id="startBtn" class="button green" disabled>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M4 3l8 5-8 5V3z" fill="currentColor"/>
               </svg>
               开始运行
             </button>
-            <button id="closeBtn" class="secondary-btn">关闭</button>
+            <button id="closeBtn" class="button red">关闭</button>
           </div>
         </div>
       </div>
@@ -334,7 +361,6 @@ function createCredentialsUI(): Promise<Config> {
     const saveAccountBtn = modal.querySelector('#saveAccountBtn') as HTMLButtonElement;
     const cancelEditBtn = modal.querySelector('#cancelEditBtn') as HTMLButtonElement;
     const startBtn = modal.querySelector('#startBtn') as HTMLButtonElement;
-    const modalContent = modal.querySelector('.modal-content') as HTMLDivElement;
 
     let currentConfig: Config = { accounts: [] };
     let editingAccountId: string | null = null;
@@ -355,10 +381,6 @@ function createCredentialsUI(): Promise<Config> {
       return email.split('@')[0].substring(0, 2).toUpperCase();
     }
 
-    function scrollToEditForm() {
-      editForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
     function renderAccounts() {
       accountsList.innerHTML = '';
       currentConfig.accounts.forEach(account => {
@@ -371,9 +393,9 @@ function createCredentialsUI(): Promise<Config> {
             <div>${account.username}</div>
           </div>
           <div class="account-actions">
-            <button class="action-btn secondary-btn select-btn">选择</button>
-            <button class="action-btn secondary-btn edit-btn">编辑</button>
-            <button class="action-btn secondary-btn delete-btn">删除</button>
+            <button class="button select-btn">选择</button>
+            <button class="button edit-btn">编辑</button>
+            <button class="button red delete-btn">删除</button>
           </div>
         `;
 
@@ -388,11 +410,11 @@ function createCredentialsUI(): Promise<Config> {
           editUsername.value = account.username;
           editPassword.value = account.password;
           editForm.style.display = 'block';
-          scrollToEditForm();
+          accountsList.style.display = 'none';
         });
 
         accountItem.querySelector('.delete-btn')?.addEventListener('click', () => {
-          if (confirm('确定要删除该账号吗？')) {
+          if (confirm('确定要删除这个账号吗？该操作无法撤销。')) {
             currentConfig.accounts = currentConfig.accounts.filter(a => a.id !== account.id);
             if (currentConfig.selectedAccountId === account.id) {
               currentConfig.selectedAccountId = undefined;
@@ -411,12 +433,12 @@ function createCredentialsUI(): Promise<Config> {
       editUsername.value = '';
       editPassword.value = '';
       editForm.style.display = 'block';
-      scrollToEditForm();
+      accountsList.style.display = 'none';
     });
 
     saveAccountBtn.addEventListener('click', () => {
       if (!editUsername.value || !editPassword.value) {
-        alert('请填写完整的账号信息');
+        alert('请填写完整的账号和密码信息。');
         return;
       }
 
@@ -439,12 +461,14 @@ function createCredentialsUI(): Promise<Config> {
       }
 
       editForm.style.display = 'none';
+      accountsList.style.display = 'block';
       renderAccounts();
       updateStartButtonState();
     });
 
     cancelEditBtn.addEventListener('click', () => {
       editForm.style.display = 'none';
+      accountsList.style.display = 'block';
     });
 
     closeBtn.addEventListener('click', () => {
@@ -494,6 +518,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const headlessCombo = document.getElementById('headlessCombo') as HTMLSelectElement;
   const startButton = document.getElementById('startButton') as HTMLButtonElement;
 
+    // Initialize timer display
+  createTimerDisplay();
+
   if (!outputEditText || !runningIntervalCombo || !headlessCombo || !startButton) {
     console.error('舞台道具缺失，无法开始演出');
     return;
@@ -520,8 +547,60 @@ async function runPuppeteerAction(account: Account, headless: boolean) {
     }
 }
 
+  let timerDisplayInterval: NodeJS.Timeout | null = null;
+let nextRunTime: Date | null = null;
+
+function updateTimerDisplay() {
+    const timerDisplay = document.getElementById('timerDisplay');
+    if (!timerDisplay) {
+        createTimerDisplay();
+        return;
+    }
+
+    timerDisplay.style.display = 'block';
+
+    if (!nextRunTime) {
+        timerDisplay.textContent = '暂无任务';
+        return;
+    }
+
+    const now = new Date();
+    const timeLeft = nextRunTime.getTime() - now.getTime();
+
+    if (timeLeft <= 0) {
+        timerDisplay.textContent = '即将执行...';
+        return;
+    }
+
+    const minutes = Math.floor(timeLeft / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    timerDisplay.textContent = `下次执行: ${minutes}分${seconds}秒`;
+}
+
+
 
 startButton.addEventListener('click', async () => {
+     const timerDisplay = document.getElementById('timerDisplay');
+
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+        if (timerDisplayInterval) {
+            clearInterval(timerDisplayInterval);
+            timerDisplayInterval = null;
+        }
+        startButton.textContent = '开启水之幕帘';
+        nextRunTime = null;
+        if (timerDisplay) {
+            timerDisplay.textContent = '暂无任务';
+        }
+        addOutput('水之演绎暂时停滞', outputEditText, 'yellow');
+        addOutput('水之剧场休息中', outputEditText);
+        return;
+    } else {
+        startButton.textContent = '关闭水之帘幕';
+    }
+
   if (intervalId) {
     clearInterval(intervalId);
     intervalId = null;
@@ -530,7 +609,7 @@ startButton.addEventListener('click', async () => {
     addOutput('水之剧场休息中', outputEditText);
     return;
   } else {
-    startButton.textContent = '落下水之帘幕';
+    startButton.textContent = '关闭水之帘幕';
   }
 
     console.log('水之幕帘已开启');
@@ -565,15 +644,22 @@ startButton.addEventListener('click', async () => {
   );
 
   await runPuppeteerAction(selectedAccount, headless);
+    nextRunTime = new Date(Date.now() + interval * 60 * 1000);
 
+// Start the timer display update
+    if (timerDisplayInterval) {
+        clearInterval(timerDisplayInterval);
+    }
+    timerDisplayInterval = setInterval(updateTimerDisplay, 1000);
 
-  intervalId = setInterval(
-    async () => {
-      addOutput(`定时唤起水之幕帘，使用账号: ${selectedAccount.username}，间隔: ${interval} 分钟`, outputEditText, 'cyan');
-      await runPuppeteerAction(selectedAccount, headless);
-    },
-    interval * 60 * 1000
-  );
+    intervalId = setInterval(
+        async () => {
+            addOutput(`定时唤起水之幕帘，使用账号: ${selectedAccount.username}，间隔: ${interval} 分钟`, outputEditText, 'cyan');
+            await runPuppeteerAction(selectedAccount, headless);
+            nextRunTime = new Date(Date.now() + interval * 60 * 1000);
+        },
+        interval * 60 * 1000
+    );
   });
 
   console.log('水之剧场已就绪，等待开幕');

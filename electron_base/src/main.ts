@@ -18,14 +18,6 @@ pie
     console.error('Failed to initialize pie:', error);
   });
 
-// 添加这些行在文件顶部
-// if (process.env.NODE_ENV !== 'production') {
-//   const electronReload = require('electron-reload');
-//   electronReload(__dirname, {
-//     electron: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
-//     hardResetMethod: 'exit',
-//   });
-// }
 
 function createWindow() {
   // Create the browser window.
@@ -124,10 +116,27 @@ ipcMain.handle(
   }
 );
 
-// 设置 IPC 处理程序
+// 获取配置文件路径
+function getConfigPath() {
+  // 获取用户数据目录
+  const userDataPath = app.getPath('userData');
+  return path.join(userDataPath, 'config.json');
+}
+
+// 修改加载配置的处理程序
 ipcMain.handle('load-config', async () => {
   try {
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = getConfigPath();
+    // 检查文件是否存在
+    const exists = await fs.promises.access(configPath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!exists) {
+      // 如果文件不存在，返回默认配置或null
+      return null;
+    }
+
     const configData = await fs.promises.readFile(configPath, 'utf8');
     return JSON.parse(configData);
   } catch (error) {
@@ -136,9 +145,14 @@ ipcMain.handle('load-config', async () => {
   }
 });
 
+// 修改保存配置的处理程序
 ipcMain.handle('save-config', async (event, config) => {
   try {
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = getConfigPath();
+    // 确保目录存在
+    const configDir = path.dirname(configPath);
+    await fs.promises.mkdir(configDir, { recursive: true });
+
     await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
     return true;
   } catch (error) {
@@ -147,19 +161,15 @@ ipcMain.handle('save-config', async (event, config) => {
   }
 });
 
+// 修改重置配置的处理程序
 ipcMain.handle('reset-config', async () => {
   try {
-    const configPath = path.join(__dirname, 'config.json');
-    // await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
-    //  删除这个文件
-    // Check if the file exists
-    const fileExists = await fs.promises
-      .access(configPath)
+    const configPath = getConfigPath();
+    const fileExists = await fs.promises.access(configPath)
       .then(() => true)
       .catch(() => false);
 
     if (fileExists) {
-      // If the file exists, delete it
       await fs.promises.unlink(configPath);
       console.log('Config file deleted successfully');
     } else {

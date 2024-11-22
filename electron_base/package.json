@@ -1,6 +1,6 @@
 {
   "name": "imecas-auto-reconnect",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "./dist/main.js",
   "description": "A minimal Electron application written with Typescript",
   "scripts": {
@@ -12,8 +12,9 @@
     "electron-dev": "wait-on dist/main.js && electron .",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"src/**/*.html\"",
     "prebuild-win": "npm run build",
-    "build-win": "NODE_ENV=production electron-builder --win --x64",
-    "build-win-msi": "NODE_ENV=production npm run build && electron-builder --win --x64 --msi",
+     "build-win": "npm run build && electron-builder --win --x64",
+    "build-win-nsis": "npm run build && electron-builder --win --x64 -c.win.target=nsis",
+    "build-win-msi": "npm run build && electron-builder --win --x64 -c.win.target=msi",
     "build-mac": "NODE_ENV=production npm run build && electron-builder --mac"
 
   },
@@ -21,14 +22,18 @@
     "appId": "life.dingli.heox",
     "productName": "Imecas Genshen Impact",
     "icon": "icon.png",
-    "win":  {
-    "target": [
-      {
-        "target": "nsis",
-        "arch": ["x64"]
-      }
-    ]
-  },
+ "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "msi",
+          "arch": ["x64"]
+        }
+      ]
+    },
     "files": [
       "dist/**/*",
       "node_modules/**/*",
