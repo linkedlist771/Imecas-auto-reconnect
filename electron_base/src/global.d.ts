@@ -17,10 +17,17 @@ declare global {
   }
 }
 
-interface Config {
+interface Account {
   username: string;
   password: string;
+  id: string;  // Unique identifier for each account
 }
+
+interface Config {
+  accounts: Account[];
+  selectedAccountId?: string;  // Currently selected account
+}
+
 
 
 export {};
