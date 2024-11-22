@@ -1,4 +1,4 @@
-// render.ts
+// renderer.ts
 interface Config {
   username: string;
   password: string;
@@ -120,7 +120,6 @@ function addOutput(message: string, outputEditText: HTMLTextAreaElement, color =
   outputEditText.scrollTop = outputEditText.scrollHeight;
 }
 
-
 const resetConfigButton = document.getElementById('resetConfigButton') as HTMLButtonElement;
 
 resetConfigButton.addEventListener('click', async () => {
@@ -188,7 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     console.log('水之幕帘已开启');
-    let config: Config | null = null;// await loadConfig();
+    let config: Config | null = null; // await loadConfig();
 
     if (!config) {
       try {

@@ -1,3 +1,4 @@
+// main.ts
 import { app, BrowserWindow, ipcMain } from 'electron';
 import pie from 'puppeteer-in-electron';
 import puppeteer from 'puppeteer-core';
@@ -55,20 +56,18 @@ async function loginWithPuppeteer(
   loginUrl: string,
   headless: boolean = true
 ) {
-  try {
-    const window = new BrowserWindow({ show: !headless });
-    const page = await pie.getPage(browser, window);
+  const window = new BrowserWindow({ show: !headless });
+  const page = await pie.getPage(browser, window);
 
+  try {
     await page.goto(loginUrl, { timeout: 60000 });
 
     await page.waitForSelector('input[id="userName"]');
     // 清空用户名输入框，然后输入
-    await page.$eval('input[id="userName"]', el => el.value = '');
+    await page.$eval('input[id="userName"]', (el) => (el.value = ''));
     await page.type('input[id="userName"]', username);
-    const pageUrl = page.url();
-
     // 清空密码输入框，然后输入
-    await page.$eval('input[id="password"]', el => el.value = '');
+    await page.$eval('input[id="password"]', (el) => (el.value = ''));
     await page.type('input[id="password"]', password);
     await page.click('input[type="submit"]');
     await page.click('input[type="submit"]');
@@ -76,20 +75,34 @@ async function loginWithPuppeteer(
 
     // 等待登录完成，这里假设登录后会出现某个特定元素
     try {
-      await page.waitForSelector('.some-element', {timeout: 1000 * 5});
-    }
-    catch (error) {
+      await page.waitForSelector('.some-element', { timeout: 1000 * 5 });
+    } catch (error) {
       console.error('Login failed:', error);
+    } finally {
+      if (page) {
+        await page.close().catch((e) => console.error('Error closing page:', e));
+      }
+      if (window) {
+        window.destroy();
+      }
     }
-    finally {
-      await page.close();
-      window.destroy()
+    if (page) {
+      await page.close().catch((e) => console.error('Error closing page:', e));
     }
-    window.destroy();
-    return pageUrl;
+    if (window) {
+      window.destroy();
+    }
   } catch (error) {
     console.error('Login failed:', error);
+
     throw error;
+  } finally {
+    if (page) {
+      await page.close().catch((e) => console.error('Error closing page:', e));
+    }
+    if (window) {
+      window.destroy();
+    }
   }
 }
 
@@ -136,12 +149,12 @@ ipcMain.handle('save-config', async (event, config) => {
 
 ipcMain.handle('reset-config', async () => {
   try {
-
     const configPath = path.join(__dirname, 'config.json');
     // await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2));
     //  删除这个文件
-   // Check if the file exists
-    const fileExists = await fs.promises.access(configPath)
+    // Check if the file exists
+    const fileExists = await fs.promises
+      .access(configPath)
       .then(() => true)
       .catch(() => false);
 
@@ -151,33 +164,14 @@ ipcMain.handle('reset-config', async () => {
       console.log('Config file deleted successfully');
     } else {
       console.log('Config file does not exist, no deletion necessary');
-    }     return true;
+    }
+    return true;
   } catch (error) {
     console.error('Error resetting config:', error);
     return false;
   }
 });
 
-// app.whenReady().then(async () => {
-//   await initializePie();
-//   createWindow();
-// });
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-// const main = async () => {
-//   await pie.initialize(app);
-//   const browser = await pie.connect(app, puppeteer);
-//
-//   const window = new BrowserWindow();
-//   const url = "https://example.com/";
-//   await window.loadURL(url);
-//
-//   const page = await pie.getPage(browser, window);
-//   console.log(page.url());
-//   window.destroy();
-// };
 
 app.whenReady().then(async () => {
   await initializeBrowser();
@@ -193,9 +187,7 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
